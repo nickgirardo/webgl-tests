@@ -1,5 +1,9 @@
 'use strict'
 
+import * as fragSrc from "./shaders/test.frag";
+import * as vertSrc from "./shaders/test.vert";
+
+
 function resize(canvas) {
   // Among other things, this method makes sure the game is always 16/9
   const desiredAspectRatio = 16/9;
@@ -34,10 +38,6 @@ function loadImage(url) {
   })
 };
 
-function getShaderSource(id) {
-  return document.getElementById(id).textContent.replace(/^\s+|\s+$/g, '');
-};
-
 (function() {
   const canvas = document.querySelector('canvas');
   const gl = canvas.getContext('webgl2', { antialias: false });
@@ -51,7 +51,6 @@ function getShaderSource(id) {
   // Create program and link shaders
   const program = gl.createProgram();
 
-  const vertSrc = getShaderSource('vs');
   const vertShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertShader, vertSrc);
   gl.compileShader(vertShader);
@@ -61,7 +60,6 @@ function getShaderSource(id) {
     console.error(vertShaderErr);
   gl.deleteShader(vertShader);
 
-  const fragSrc = getShaderSource('fs');
   const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(fragShader, fragSrc);
   gl.compileShader(fragShader);

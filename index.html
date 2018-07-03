@@ -8,28 +8,6 @@
       <canvas></canvas>
     </div>
 
-    <script id="vs" type="x-shader/x-vertex">
-        #version 300 es
-        in vec2 a_position; 
-
-        void main()
-        {
-            gl_Position = vec4(a_position.x, a_position.y, 0, 1);
-        }
-    </script>
-
-    <script id="fs" type="x-shader/x-fragment">
-        #version 300 es
-        precision highp float;
-        precision highp int;
-        uniform sampler2D diffuse;
-        uniform vec2 u_imageSize;
-        out vec4 color;
-        void main()
-        {
-            color = texture(diffuse, vec2(gl_FragCoord.x, u_imageSize.y - gl_FragCoord.y) / u_imageSize);
-        }
-    </script>
-    <script src='main.js'></script>
+    <script src='bundle.js'></script>
   </body>
 </html>
