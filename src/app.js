@@ -38,6 +38,35 @@ function loadImage(url) {
   })
 };
 
+function createShader(gl, program, src, type) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
+  gl.attachShader(program, shader);
+
+  const shaderLog = gl.getShaderInfoLog(shader);
+  if(shaderLog)
+    console.error(shaderLog);
+
+  // Cleanup
+  // The shader is attached to the program at this point so we don't need to keep it around
+  gl.deleteShader(shader);
+}
+
+function createProgram(gl, shaders) {
+  const program = gl.createProgram();
+
+  createShader(gl, program, shaders.vertex, gl.VERTEX_SHADER);
+  createShader(gl, program, shaders.fragment, gl.FRAGMENT_SHADER);
+
+  gl.linkProgram(program);
+  const linkLog = gl.getProgramInfoLog(program);
+  if(linkLog)
+    console.error(linkLog);
+
+  return program;
+}
+
 (function() {
   const canvas = document.querySelector('canvas');
   const gl = canvas.getContext('webgl2', { antialias: false });
@@ -49,30 +78,7 @@ function loadImage(url) {
   }
 
   // Create program and link shaders
-  const program = gl.createProgram();
-
-  const vertShader = gl.createShader(gl.VERTEX_SHADER);
-  gl.shaderSource(vertShader, vertSrc);
-  gl.compileShader(vertShader);
-  gl.attachShader(program, vertShader);
-  const vertShaderErr = gl.getShaderInfoLog(vertShader)
-  if(vertShaderErr)
-    console.error(vertShaderErr);
-  gl.deleteShader(vertShader);
-
-  const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-  gl.shaderSource(fragShader, fragSrc);
-  gl.compileShader(fragShader);
-  gl.attachShader(program, fragShader);
-  const fragShaderErr = gl.getShaderInfoLog(fragShader)
-  if(fragShaderErr)
-    console.error(fragShaderErr);
-  gl.deleteShader(fragShader);
-
-  gl.linkProgram(program);
-  const linkErr = gl.getProgramInfoLog(program);
-  if(linkErr)
-    console.error(linkErr);
+  const program = createProgram(gl, {vertex: vertSrc, fragment: fragSrc});
 
   const diffuseLocation = gl.getUniformLocation(program, 'diffuse');
   const imageSizeLocation = gl.getUniformLocation(program, 'u_imageSize');
