@@ -67,6 +67,22 @@ function createProgram(gl, shaders) {
   return program;
 }
 
+function getLocations(gl, program, names) {
+  const uniformNames = Object.entries(names.uniform);
+  let uniform = {}
+  uniformNames.forEach(([k, v]) => {
+    uniform[k] = gl.getUniformLocation(program, v)
+  });
+
+  const attribNames = Object.entries(names.attribute);
+  let attribute = {}
+  attribNames.forEach(([k, v]) => {
+    attribute[k] = gl.getAttribLocation(program, v)
+  });
+
+  return {uniform, attribute};
+}
+
 (function() {
   const canvas = document.querySelector('canvas');
   const gl = canvas.getContext('webgl2', { antialias: false });
@@ -79,10 +95,16 @@ function createProgram(gl, shaders) {
 
   // Create program and link shaders
   const program = createProgram(gl, {vertex: vertSrc, fragment: fragSrc});
-
-  const diffuseLocation = gl.getUniformLocation(program, 'diffuse');
-  const imageSizeLocation = gl.getUniformLocation(program, 'u_imageSize');
-  const positionLocation = gl.getAttribLocation(program, 'a_position');
+  //Get locations of program's uniforms and attributes by name
+  const locations = getLocations(gl, program, {
+    uniform: {
+      diffuse: 'diffuse',
+      imageSize: 'imageSize',
+    },
+    attribute: {
+      position: 'position',
+    },
+  });
 
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -97,8 +119,8 @@ function createProgram(gl, shaders) {
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(positionLocation);
+  gl.vertexAttribPointer(locations.attribute.position, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(locations.attribute.position);
 
   loadImage('../assets/img/lenna.png').then(image => {
     // -- Init Texture
@@ -113,8 +135,8 @@ function createProgram(gl, shaders) {
     gl.clearColor(0.2, 0.2, 0.2, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
-    gl.uniform1i(diffuseLocation, 0);
-    gl.uniform2f(imageSizeLocation, canvas.width / 3, canvas.height / 3);
+    gl.uniform1i(locations.uniform.diffuse, 0);
+    gl.uniform2f(locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     // Delete WebGL resources
@@ -123,6 +145,4 @@ function createProgram(gl, shaders) {
   });
 
 })();
-
-
 
