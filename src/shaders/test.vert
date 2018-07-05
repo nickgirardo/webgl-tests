@@ -1,8 +1,12 @@
 #version 300 es
-in vec2 position;
+in vec4 position;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main()
 {
-    gl_Position = vec4(position.x, position.y, 0, 1);
+    gl_Position = projection * view * model * position;
 }
 

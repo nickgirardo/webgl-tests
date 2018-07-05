@@ -3,23 +3,27 @@
 import * as fragSrc from "./shaders/test.frag";
 import * as vertSrc from "./shaders/test.vert";
 
+import * as glm from "./gl-matrix.js"
+const mat4 = glm.mat4;
+const vec3 = glm.vec3;
+
+const aspectRatio = 16/9;
 
 function resize(canvas) {
   // Among other things, this method makes sure the game is always 16/9
-  const desiredAspectRatio = 16/9;
   const scaleFactor = 0.9;
 
   let wWidth = window.innerWidth;
   let wHeight = window.innerHeight;
 
-  let aspectRatio = wWidth/ wHeight;
+  let windowAspectRatio = wWidth/ wHeight;
 
-  if(aspectRatio > desiredAspectRatio) {
-    canvas.width = wHeight * desiredAspectRatio * scaleFactor;
+  if(windowAspectRatio > aspectRatio) {
+    canvas.width = wHeight * aspectRatio * scaleFactor;
     canvas.height = wHeight * scaleFactor;
   } else {
     canvas.width = wWidth * scaleFactor;
-    canvas.height = wWidth / desiredAspectRatio * scaleFactor;
+    canvas.height = wWidth / aspectRatio * scaleFactor;
   };
 }
 
@@ -89,6 +93,7 @@ function getLocations(gl, program, names) {
 
   const isWebGL2 = !!gl;
   if(!isWebGL2) {
+    document.querySelector('body').style.backgroundColor = 'red';
     console.error("Unable to create webgl2 context");
     return;
   }
@@ -100,6 +105,9 @@ function getLocations(gl, program, names) {
     uniform: {
       diffuse: 'diffuse',
       imageSize: 'imageSize',
+      modelMatrix: 'model',
+      viewMatrix: 'view',
+      projectionMatrix : 'projection',
     },
     attribute: {
       position: 'position',
@@ -110,16 +118,16 @@ function getLocations(gl, program, names) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
   const positions = [
-    -0.5, -0.8,
-    -0.5, 0.5,
-    0.5, 0.5,
-    0.5, 0.5,
-    0.5, -0.8,
-    -0.5, -0.8,
+    -0.5, -0.8, 0.0, 1.0,
+    -0.5, 0.5, 0.0, 1.0,
+    0.5, 0.5, 0.0, 1.0,
+    0.5, 0.5, 0.0, 1.0,
+    0.5, -0.8, 0.0, 1.0,
+    -0.5, -0.8, 0.0, 1.0,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  gl.vertexAttribPointer(locations.attribute.position, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(locations.attribute.position, 4, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(locations.attribute.position);
 
   loadImage('../assets/img/lenna.png').then(image => {
@@ -137,6 +145,45 @@ function getLocations(gl, program, names) {
     gl.useProgram(program);
     gl.uniform1i(locations.uniform.diffuse, 0);
     gl.uniform2f(locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
+
+    const projectionMatrix = mat4.create();
+    mat4.perspective(
+      projectionMatrix, // Destination matrix
+      45 * Math.PI / 180, // FOV
+      aspectRatio,
+      0.1, // Near clipping plane
+      100.0, // Far clipping plane
+    );
+
+    const viewMatrix = mat4.create();
+    mat4.lookAt(
+      viewMatrix, // Destination matrix
+      vec3.fromValues(0.0, 0.0, 0.0), // Camera position
+      vec3.fromValues(0.0, 0.0, 1.0), // View direction
+      vec3.fromValues(0.0, 1.0, 0.0) // Up vector
+    );
+
+    const modelMatrix = mat4.create();
+    mat4.translate(
+      modelMatrix, // Destination matrix
+      modelMatrix, // In matrix
+      vec3.fromValues(1.0, 0.0, 3.0)
+    );
+
+    gl.uniformMatrix4fv(
+      locations.uniform.projectionMatrix,
+      false,
+      projectionMatrix);
+
+    gl.uniformMatrix4fv(
+      locations.uniform.viewMatrix,
+      false,
+      viewMatrix);
+
+    gl.uniformMatrix4fv(
+      locations.uniform.modelMatrix,
+      false,
+      modelMatrix);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     // Delete WebGL resources
