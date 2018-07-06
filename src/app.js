@@ -7,6 +7,9 @@ import * as glm from "./gl-matrix.js"
 const mat4 = glm.mat4;
 const vec3 = glm.vec3;
 
+const canvas = document.querySelector('canvas');
+const gl = canvas.getContext('webgl2', { antialias: false });
+
 const aspectRatio = 16/9;
 
 function resize(canvas) {
@@ -25,9 +28,13 @@ function resize(canvas) {
     canvas.width = wWidth * scaleFactor;
     canvas.height = wWidth / aspectRatio * scaleFactor;
   };
-}
 
-resize(document.querySelector('canvas'));
+  gl.viewport(0, 0, canvas.width, canvas.height);
+
+  // Right now the draw is not being executed every frame
+  // Probably remove this once that is set up
+  draw();
+}
 
 function loadImage(url) {
 	return new Promise((resolve, reject) => {
@@ -87,17 +94,7 @@ function getLocations(gl, program, names) {
   return {uniform, attribute};
 }
 
-(function() {
-  const canvas = document.querySelector('canvas');
-  const gl = canvas.getContext('webgl2', { antialias: false });
-
-  const isWebGL2 = !!gl;
-  if(!isWebGL2) {
-    document.querySelector('body').style.backgroundColor = 'red';
-    console.error("Unable to create webgl2 context");
-    return;
-  }
-
+function draw() {
   // Create program and link shaders
   const program = createProgram(gl, {vertex: vertSrc, fragment: fragSrc});
   //Get locations of program's uniforms and attributes by name
@@ -191,5 +188,21 @@ function getLocations(gl, program, names) {
     gl.deleteProgram(program);
   });
 
-})();
+}
 
+function init() {
+
+  resize(canvas);
+  window.addEventListener("resize", e=>resize(canvas));
+
+  const isWebGL2 = !!gl;
+  if(!isWebGL2) {
+    document.querySelector('body').style.backgroundColor = 'red';
+    console.error("Unable to create webgl2 context");
+    return;
+  }
+
+  draw();
+}
+
+init();
