@@ -9,6 +9,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.png$/,
+        loader: 'base64-inline-loader?name=[name].[ext]',
+      },
+      {
         test: /\.frag$/,
         loader: 'raw-loader',
       },

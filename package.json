@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/nickgirardo/webgl-tests#readme",
   "devDependencies": {
+    "base64-inline-loader": "^1.1.1",
     "raw-loader": "^0.5.1",
     "webpack": "^4.14.0",
     "webpack-cli": "^3.0.8",

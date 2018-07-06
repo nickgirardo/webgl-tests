@@ -4,9 +4,12 @@ import * as fragSrc from "./shaders/test.frag";
 import * as vertSrc from "./shaders/test.vert";
 
 import * as glm from "./gl-matrix.js"
-const mat4 = glm.mat4;
-const vec3 = glm.vec3;
 
+import * as lenna from "../assets/img/lenna.png";
+
+const imageBuffer = new Map();
+
+// TODO: consider reducing amount of global variables
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl2', { antialias: false });
 
@@ -36,10 +39,16 @@ function resize(canvas) {
   draw();
 }
 
-function loadImage(url) {
+function loadImages(images) {
+  return Promise.all(Object.entries(images).map(([name, url]) => loadImage(name, url)));
+}
+
+function loadImage(name, url) {
 	return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = url;
+    // This name is where the image will be stored in the global image buffer
+    img.name = name;
     img.onerror = function(error) {
       reject(error);
     }
@@ -95,6 +104,10 @@ function getLocations(gl, program, names) {
 }
 
 function draw() {
+
+  const mat4 = glm.mat4;
+  const vec3 = glm.vec3;
+
   // Create program and link shaders
   const program = createProgram(gl, {vertex: vertSrc, fragment: fragSrc});
   //Get locations of program's uniforms and attributes by name
@@ -127,73 +140,68 @@ function draw() {
   gl.vertexAttribPointer(locations.attribute.position, 4, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(locations.attribute.position);
 
-  loadImage('../assets/img/lenna.png').then(image => {
-    // -- Init Texture
-    const texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    // -- Render
-    gl.clearColor(0.2, 0.2, 0.2, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.useProgram(program);
-    gl.uniform1i(locations.uniform.diffuse, 0);
-    gl.uniform2f(locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
+  // -- Init Texture
+  const texture = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageBuffer.get('lenna'));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // -- Render
+  gl.clearColor(0.2, 0.2, 0.2, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(program);
+  gl.uniform1i(locations.uniform.diffuse, 0);
+  gl.uniform2f(locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
 
-    const projectionMatrix = mat4.create();
-    mat4.perspective(
-      projectionMatrix, // Destination matrix
-      45 * Math.PI / 180, // FOV
-      aspectRatio,
-      0.1, // Near clipping plane
-      100.0, // Far clipping plane
-    );
+  const projectionMatrix = mat4.create();
+  mat4.perspective(
+    projectionMatrix, // Destination matrix
+    45 * Math.PI / 180, // FOV
+    aspectRatio,
+    0.1, // Near clipping plane
+    100.0, // Far clipping plane
+  );
 
-    const viewMatrix = mat4.create();
-    mat4.lookAt(
-      viewMatrix, // Destination matrix
-      vec3.fromValues(0.0, 0.0, 0.0), // Camera position
-      vec3.fromValues(0.0, 0.0, 1.0), // View direction
-      vec3.fromValues(0.0, 1.0, 0.0) // Up vector
-    );
+  const viewMatrix = mat4.create();
+  mat4.lookAt(
+    viewMatrix, // Destination matrix
+    vec3.fromValues(0.0, 0.0, 0.0), // Camera position
+    vec3.fromValues(0.0, 0.0, 1.0), // View direction
+    vec3.fromValues(0.0, 1.0, 0.0) // Up vector
+  );
 
-    const modelMatrix = mat4.create();
-    mat4.translate(
-      modelMatrix, // Destination matrix
-      modelMatrix, // In matrix
-      vec3.fromValues(1.0, 0.0, 3.0)
-    );
+  const modelMatrix = mat4.create();
+  mat4.translate(
+    modelMatrix, // Destination matrix
+    modelMatrix, // In matrix
+    vec3.fromValues(1.0, 0.0, 3.0)
+  );
 
-    gl.uniformMatrix4fv(
-      locations.uniform.projectionMatrix,
-      false,
-      projectionMatrix);
+  gl.uniformMatrix4fv(
+    locations.uniform.projectionMatrix,
+    false,
+    projectionMatrix);
 
-    gl.uniformMatrix4fv(
-      locations.uniform.viewMatrix,
-      false,
-      viewMatrix);
+  gl.uniformMatrix4fv(
+    locations.uniform.viewMatrix,
+    false,
+    viewMatrix);
 
-    gl.uniformMatrix4fv(
-      locations.uniform.modelMatrix,
-      false,
-      modelMatrix);
+  gl.uniformMatrix4fv(
+    locations.uniform.modelMatrix,
+    false,
+    modelMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-    // Delete WebGL resources
-    gl.deleteTexture(texture);
-    gl.deleteProgram(program);
-  });
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  // Delete WebGL resources
+  gl.deleteTexture(texture);
+  gl.deleteProgram(program);
 
 }
 
 function init() {
-
-  resize(canvas);
-  window.addEventListener("resize", e=>resize(canvas));
 
   const isWebGL2 = !!gl;
   if(!isWebGL2) {
@@ -202,7 +210,15 @@ function init() {
     return;
   }
 
-  draw();
+  loadImages({lenna}).then( images => {
+    images.forEach(image => imageBuffer.set(image.name, image));
+
+    // Resizing triggers a draw
+    // Starting resizing here assures that images will be loaded first
+    resize(canvas);
+    window.addEventListener("resize", e=>resize(canvas));
+  });
+
 }
 
 init();
