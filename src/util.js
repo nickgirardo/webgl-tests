@@ -1,7 +1,4 @@
 
-
-export const imageBuffer = new Map();
-
 export function loadImages(images) {
   return Promise.all(Object.entries(images).map(([name, url]) => loadImage(name, url)));
 }

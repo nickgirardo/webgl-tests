@@ -15,8 +15,7 @@ export default class Test {
   constructor() {}
 
   async init(gl) {
-    const images = await Util.loadImages({lenna});
-    images.forEach(image => Util.imageBuffer.set(image.name, image));
+    this.diffuseImg = await Util.loadImage('lenna', lenna);
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
@@ -54,7 +53,7 @@ export default class Test {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Util.imageBuffer.get('lenna'));
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.diffuseImg);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   }
