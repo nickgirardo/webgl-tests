@@ -14,7 +14,8 @@ export default class Test {
 
   constructor() {}
 
-  async init(gl) {
+  async init(gl, pos) {
+    this.pos = pos;
     this.diffuseImg = await Util.loadImage('lenna', lenna);
 
     // Create program and link shaders
@@ -58,15 +59,14 @@ export default class Test {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   }
 
-  static async create(gl) {
+  // Janky hack because I want an asynchronous constructor
+  static async create(gl, pos) {
     const o = new Test();
-    await o.init(gl);
+    await o.init(gl, pos);
     return o;
   }
 
   draw(canvas, gl) {
-    const time = performance.now() / 1000;
-
     gl.useProgram(this.programInfo.program);
     gl.uniform1i(this.programInfo.locations.uniform.diffuse, 0);
     gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
@@ -92,7 +92,7 @@ export default class Test {
     mat4.translate(
       modelMatrix, // Destination matrix
       modelMatrix, // In matrix
-      vec3.fromValues(1.0+Math.sin(time), 0.0, 3.0)
+      this.pos
     );
 
     gl.uniformMatrix4fv(

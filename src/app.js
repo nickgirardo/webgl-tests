@@ -11,7 +11,7 @@ import Test from "./entities/test.js";
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl2', { antialias: false });
 
-let test;
+const scene = [];
 
 const aspectRatio = 16/9;
 
@@ -38,7 +38,7 @@ function resize(canvas) {
 function draw() {
   gl.clearColor(0.2, 0.2, 0.2, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  test.draw(canvas, gl);
+  scene.forEach(t=>t.draw(canvas,gl));
 }
 
 function update() {
@@ -55,8 +55,11 @@ function init() {
     return;
   }
 
-  Test.create(gl).then( newTest => {
-    test = newTest;
+  const pos1 = glm.vec3.fromValues(1, 0, 3);
+  const pos2 = glm.vec3.fromValues(-1, 0, 3);
+
+  Promise.all([Test.create(gl, pos1), Test.create(gl, pos2)]).then((tests) => {
+    tests.forEach(t=>scene.push(t));
 
     resize(canvas);
     window.addEventListener("resize", e=>resize(canvas));
