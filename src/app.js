@@ -1,11 +1,5 @@
-'use strict'
-
-import * as glm from "./gl-matrix.js";
-
-import * as fragSrc from "./shaders/test.frag";
-import * as vertSrc from "./shaders/test.vert";
-
 import Test from "./entities/test.js";
+import * as glm from "./gl-matrix.js";
 
 // TODO: consider reducing amount of global variables
 const canvas = document.querySelector('canvas');
