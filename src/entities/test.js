@@ -1,8 +1,8 @@
 
 import * as Util from "../util.js";
 
-import * as fragSrc from "../shaders/test.frag";
-import * as vertSrc from "../shaders/test.vert";
+import * as fragSrc from "../shaders/mvp.frag";
+import * as vertSrc from "../shaders/screenSpaceTexture.vert";
 
 import * as lenna from "../../assets/img/lenna.png";
 import * as glm from "../gl-matrix.js";
