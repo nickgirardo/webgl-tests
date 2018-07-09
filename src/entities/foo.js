@@ -1,22 +1,22 @@
 
 import * as Util from "../util.js";
 
-import * as fragSrc from "../shaders/screenSpace.frag";
+import * as fragSrc from "../shaders/screenSpaceInv.frag";
 import * as vertSrc from "../shaders/mvp.vert";
 
-import * as lenna from "../../assets/img/lenna.png";
+import * as bold from "../../assets/img/boldAndBrash.png";
 import * as glm from "../gl-matrix.js";
 
 const mat4 = glm.mat4;
 const vec3 = glm.vec3;
 
-export default class Test {
+export default class Foo {
 
   constructor() {}
 
   async init(gl, pos) {
     this.pos = pos;
-    this.diffuseImg = await Util.loadImage('lenna', lenna);
+    this.diffuseImg = await Util.loadImage('boldAndBrash', bold);
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
@@ -33,12 +33,12 @@ export default class Test {
     });
 
     this.positions = [
-      -0.5, -0.8, 0.0, 1.0,
-      -0.5, 0.5, 0.0, 1.0,
-      0.5, 0.5, 0.0, 1.0,
-      0.5, 0.5, 0.0, 1.0,
-      0.5, -0.8, 0.0, 1.0,
-      -0.5, -0.8, 0.0, 1.0,
+      -0.8, -0.8, 0.0, 1.0,
+      -0.8, 0.8, 0.0, 1.0,
+      0.8, 0.8, 0.0, 1.0,
+      0.8, 0.8, 0.0, 1.0,
+      0.8, -0.8, 0.0, 1.0,
+      -0.8, -0.8, 0.0, 1.0,
     ];
 
     this.positionBuffer = gl.createBuffer();
@@ -48,7 +48,7 @@ export default class Test {
     // -- Init Texture
     // TODO these texture ids shouldn't be hardcoded
     const texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
+    gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.diffuseImg);
@@ -58,15 +58,15 @@ export default class Test {
 
   // Janky hack because I want an asynchronous constructor
   static async create(gl, pos) {
-    const o = new Test();
+    const o = new Foo();
     await o.init(gl, pos);
     return o;
   }
 
   draw(canvas, gl) {
     gl.useProgram(this.programInfo.program);
-    gl.uniform1i(this.programInfo.locations.uniform.diffuse, 0);
-    gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
+    gl.uniform1i(this.programInfo.locations.uniform.diffuse, 1);
+    gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 9, canvas.height / 9);
 
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
@@ -114,5 +114,5 @@ export default class Test {
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
   }
- 
+
 }

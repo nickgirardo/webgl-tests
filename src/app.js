@@ -1,4 +1,5 @@
 import Test from "./entities/test.js";
+import Foo from "./entities/foo.js";
 import * as glm from "./gl-matrix.js";
 
 // TODO: consider reducing amount of global variables
@@ -51,8 +52,9 @@ function init() {
 
   const pos1 = glm.vec3.fromValues(1, 0, 3);
   const pos2 = glm.vec3.fromValues(-1, 0, 3);
+  const pos3 = glm.vec3.fromValues(0, 0, 8);
 
-  Promise.all([Test.create(gl, pos1), Test.create(gl, pos2)]).then((tests) => {
+  Promise.all([Test.create(gl, pos1), Test.create(gl, pos2), Foo.create(gl, pos3)]).then((tests) => {
     tests.forEach(t=>scene.push(t));
 
     resize(canvas);
