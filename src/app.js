@@ -31,8 +31,15 @@ function resize(canvas) {
 }
 
 function draw() {
-  gl.clearColor(0.2, 0.2, 0.2, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clearColor(0.2, 0.2, 0.2, 1.0); // Clear background with dark grey color
+  gl.clearDepth(1.0); // Clear the depth buffer
+  gl.enable(gl.DEPTH_TEST); // Enable depth testing, insures correct ordering
+  gl.depthFunc(gl.LEQUAL); // Near obsucres far
+
+  // Clear canvas
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Draw each individual element
   scene.forEach(t=>t.draw(canvas,gl));
 }
 
