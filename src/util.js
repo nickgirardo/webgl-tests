@@ -1,14 +1,16 @@
 
-export function loadImages(images) {
-  return Promise.all(Object.entries(images).map(([name, url]) => loadImage(name, url)));
-}
-
-export function loadImage(name, url) {
+/*
+ * @function loadImage
+ *
+ * @param string src Source of image to be loaded
+ *
+ * @returns Promise(Image) Promise completed when image element loaded
+ *
+ */
+export function loadImage(src) {
 	return new Promise((resolve, reject) => {
     const img = new Image();
-    img.src = url;
-    // This name is where the image will be stored in the global image buffer
-    img.name = name;
+    img.src = src;
     img.onerror = function(error) {
       reject(error);
     }
@@ -18,6 +20,17 @@ export function loadImage(name, url) {
   })
 };
 
+/*
+ * @function createShader
+ *
+ * @param WebGL2RenderingContext gl
+ * @param WebGLProgram program
+ * @param string src Raw source of shader
+ * @param GLenum type Must be either gl.FRAGMENT_SHADER or gl.VERTEX_SHADER
+ *
+ * Impure, modifies program argument by attaching to it compiled shader
+ *
+ */
 export function createShader(gl, program, src, type) {
   const shader = gl.createShader(type);
   gl.shaderSource(shader, src);
@@ -33,6 +46,15 @@ export function createShader(gl, program, src, type) {
   gl.deleteShader(shader);
 }
 
+/*
+ * @function createProgram
+ *
+ * @param WebGL2RenderingContext gl
+ * @param {vertex: string, fragment:string} shaders Raw sources of shaders
+ * @param Object names
+ *
+ * @returns {program: WebGLProgram, locations: Object}
+ */
 export function createProgram(gl, shaders, names) {
   const program = gl.createProgram();
 
@@ -45,21 +67,29 @@ export function createProgram(gl, shaders, names) {
     console.error(linkLog);
 
   //Get locations of program's uniforms and attributes by name
-  const locations = getLocations(gl, program, names);
+  const locations = getLocations(gl, program, names.uniform, names.attribute);
 
   return {program, locations};
 }
 
-export function getLocations(gl, program, names) {
-  const uniformNames = Object.entries(names.uniform);
+/*
+ * @function getLocations
+ *
+ * @param WebGL2RenderingContext gl
+ * @param WebGLProgram program
+ * @param Object uniformNames Key represents where location will be stored in result, value is the name of the uniform in shader program
+ * @param Object attribNames Key represents where location will be stored in result, value is the name of the attribute in shader program
+ */
+export function getLocations(gl, program, uniformNames, attribNames) {
+  const uniformKV = Object.entries(uniformNames);
   let uniform = {}
-  uniformNames.forEach(([k, v]) => {
+  uniformKV.forEach(([k, v]) => {
     uniform[k] = gl.getUniformLocation(program, v)
   });
 
-  const attribNames = Object.entries(names.attribute);
+  const attribKV = Object.entries(attribNames);
   let attribute = {}
-  attribNames.forEach(([k, v]) => {
+  attribKV.forEach(([k, v]) => {
     attribute[k] = gl.getAttribLocation(program, v)
   });
 

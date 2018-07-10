@@ -16,7 +16,7 @@ export default class Foo {
 
   async init(gl, pos) {
     this.pos = pos;
-    this.diffuseImg = await Util.loadImage('boldAndBrash', bold);
+    this.diffuseImg = await Util.loadImage(bold);
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {

@@ -16,7 +16,7 @@ export default class Test {
 
   async init(gl, pos) {
     this.pos = pos;
-    this.diffuseImg = await Util.loadImage('lenna', lenna);
+    this.diffuseImg = await Util.loadImage(lenna);
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
