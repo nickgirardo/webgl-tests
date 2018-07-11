@@ -1,4 +1,3 @@
-
 import * as Util from "../util.js";
 
 import * as fragSrc from "../shaders/screenSpaceInv.frag";
@@ -46,8 +45,8 @@ export default class Foo {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.STATIC_DRAW);
 
     // -- Init Texture
-    this.texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    this.diffuse = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.diffuse);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.diffuseImg);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -61,13 +60,13 @@ export default class Foo {
     return o;
   }
 
-  draw(canvas, gl) {
+  draw(canvas, gl, camera) {
     gl.useProgram(this.programInfo.program);
 
-    gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 9, canvas.height / 9);
+    gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 16, canvas.height / 9);
 
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.bindTexture(gl.TEXTURE_2D, this.diffuse);
     gl.uniform1i(this.programInfo.locations.uniform.diffuse, 0);
 
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
@@ -83,13 +82,7 @@ export default class Foo {
       100.0, // Far clipping plane
     );
 
-    const viewMatrix = mat4.create();
-    mat4.lookAt(
-      viewMatrix, // Destination matrix
-      vec3.fromValues(0.0, 0.0, 0.0), // Camera position
-      vec3.fromValues(0.0, 0.0, 1.0), // View direction
-      vec3.fromValues(0.0, 1.0, 0.0) // Up vector
-    );
+    const viewMatrix = camera;
 
     const modelMatrix = mat4.create();
     mat4.translate(

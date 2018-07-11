@@ -1,14 +1,20 @@
 import Test from "./entities/test.js";
 import Foo from "./entities/foo.js";
+import * as K from "./keyboard.js";
 import * as glm from "./gl-matrix.js";
 
 // TODO: consider reducing amount of global variables
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl2', { antialias: false });
 
+
 const scene = [];
 
 const aspectRatio = 16/9;
+
+let camera = glm.mat4.create();
+let cameraPos = glm.vec3.fromValues(0, 0, 0);
+let cameraAngle = 0;
 
 function resize(canvas) {
   // Among other things, this method makes sure the game is always 16/9
@@ -40,15 +46,57 @@ function draw() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Draw each individual element
-  scene.forEach(t=>t.draw(canvas,gl));
+  scene.forEach(t=>t.draw(canvas, gl, camera));
 }
 
 function update() {
+  const mat4 = glm.mat4;
+  const vec3 = glm.vec3;
+  const up = vec3.fromValues(0, 1, 0);
+
+  let directionR = 0;
+  if (K.keys[75] && K.keys[74])
+    directionR = (K.timestamps[75] > K.timestamps[74]) ? -1 : 1;
+  else if (K.keys[75] || K.keys[74])
+    directionR = K.keys[75] ? -1 : 1;
+  else
+    directionR = 0;
+
+  cameraAngle += directionR * 0.06;
+  const cameraDirection = vec3.fromValues(0,0,1);
+  vec3.rotateY(cameraDirection, cameraDirection, vec3.create(), cameraAngle);
+
+  let directionX = 0;
+  if (K.keys[65] && K.keys[68])
+    directionX = (K.timestamps[68] > K.timestamps[65]) ? -1 : 1;
+  else if (K.keys[65] || K.keys[68])
+    directionX = K.keys[68] ? -1 : 1;
+  else
+    directionX = 0;
+
+  let directionZ = 0;
+  if (K.keys[83] && K.keys[87])
+    directionZ = (K.timestamps[83] > K.timestamps[87]) ? -1 : 1;
+  else if (K.keys[83] || K.keys[87])
+    directionZ = K.keys[83] ? -1 : 1;
+  else
+    directionZ = 0;
+
+  const movementDir = vec3.create();
+  vec3.rotateY(movementDir, vec3.fromValues(directionX * 0.1, 0, directionZ * 0.1), vec3.create(), cameraAngle);
+
+  vec3.add(cameraPos, cameraPos, movementDir)
+  const cameraAim = vec3.create();
+  vec3.add(cameraAim, cameraPos, cameraDirection);
+  mat4.lookAt(camera, cameraPos, cameraAim, up);
+
   draw();
   window.requestAnimationFrame(update);
 }
 
 function init() {
+
+  K.init();
 
   const isWebGL2 = !!gl;
   if(!isWebGL2) {
