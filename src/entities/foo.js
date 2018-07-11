@@ -46,10 +46,8 @@ export default class Foo {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.STATIC_DRAW);
 
     // -- Init Texture
-    // TODO these texture ids shouldn't be hardcoded
-    const texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    this.texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.diffuseImg);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -65,8 +63,12 @@ export default class Foo {
 
   draw(canvas, gl) {
     gl.useProgram(this.programInfo.program);
-    gl.uniform1i(this.programInfo.locations.uniform.diffuse, 1);
+
     gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 9, canvas.height / 9);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.uniform1i(this.programInfo.locations.uniform.diffuse, 0);
 
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
