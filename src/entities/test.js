@@ -1,4 +1,3 @@
-
 import * as Util from "../util.js";
 
 import * as fragSrc from "../shaders/screenSpace.frag";

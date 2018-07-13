@@ -17,7 +17,6 @@ export function init(canvas) {
   }
 
   function handleMovement(e) {
-    console.log(e.movementX, e.movementY);
     movementX += e.movementX;
     movementY += e.movementY;
   };
