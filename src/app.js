@@ -1,3 +1,4 @@
+import * as Util from "./util.js";
 import * as Keyboard from "./keyboard.js";
 import * as Mouse from "./mouse.js";
 import * as glm from "./gl-matrix.js";
@@ -10,32 +11,11 @@ import Foo from "./entities/foo.js";
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl2', { antialias: false });
 
+const aspectRatio = 16/9;
 
 const scene = [];
 // Create a new camera at the origin
 const camera = new Camera(glm.vec3.fromValues(0, 0, 0));
-
-const aspectRatio = 16/9;
-
-function resize(canvas) {
-  // Among other things, this method makes sure the game is always 16/9
-  const scaleFactor = 0.9;
-
-  let wWidth = window.innerWidth;
-  let wHeight = window.innerHeight;
-
-  let windowAspectRatio = wWidth/ wHeight;
-
-  if(windowAspectRatio > aspectRatio) {
-    canvas.width = wHeight * aspectRatio * scaleFactor;
-    canvas.height = wHeight * scaleFactor;
-  } else {
-    canvas.width = wWidth * scaleFactor;
-    canvas.height = wWidth / aspectRatio * scaleFactor;
-  };
-
-  gl.viewport(0, 0, canvas.width, canvas.height);
-}
 
 function draw() {
   gl.clearColor(0.2, 0.2, 0.2, 1.0); // Clear background with dark grey color
@@ -78,13 +58,12 @@ function init() {
 
 
   Promise.all([Test.create(gl, pos1), Test.create(gl, pos2), Foo.create(gl, pos3)]).then((tests) => {
-    // TODO just scene.push probably
     tests.forEach(t=>scene.push(t));
 
     scene.push(camera);
 
-    resize(canvas);
-    window.addEventListener("resize", e=>resize(canvas));
+    Util.resize(gl, canvas, aspectRatio);
+    window.addEventListener("resize", e=>Util.resize(gl, canvas, aspectRatio));
 
     update();
   });
