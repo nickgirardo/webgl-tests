@@ -32,17 +32,50 @@ export default class Foo {
     });
 
     this.positions = [
-      -0.8, -0.8, 0.0, 1.0,
-      -0.8, 0.8, 0.0, 1.0,
-      0.8, 0.8, 0.0, 1.0,
-      0.8, 0.8, 0.0, 1.0,
-      0.8, -0.8, 0.0, 1.0,
-      -0.8, -0.8, 0.0, 1.0,
-    ];
+      [ -0.8, -0.8, 0.0, ],
+      [ -0.8, 0.8, 0.0, ],
+      [ 0.8, 0.8, 0.0, ],
+      [ 0.8, 0.8, 0.0, ],
+      [ 0.8, -0.8, 0.0, ],
+      [ -0.8, -0.8, 0.0, ],
+    ].map(v => vec3.fromValues(...v));
+
+    // TODO this is poc, need to be cleaned and moved
+    function makeIndicies(inVerts) {
+      const indicies = [];
+      const verticies = [];
+
+      inVerts.forEach(v=> {
+        // TODO this is awful
+        const reducer = (acc, val, ix) => {
+          if(acc !== -1) return acc;
+          if(vec3.equals(v,val)) return ix;
+          return -1;
+        };
+        const match = verticies.reduce(reducer, -1);
+        if(match !== -1) {
+          indicies.push(match);
+        } else {
+          indicies.push(verticies.length);
+          verticies.push(v);
+        }
+      });
+      return { indicies, verticies }
+    }
+
+    const {indicies, verticies} = makeIndicies(this.positions);
+    this.indicies = indicies
+    this.verticies = new Float32Array(verticies.length * 3);
+    verticies.forEach((v,ix) => this.verticies.set(v, ix * 3)); // Flatten
+
+    this.elementBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
+    // NOTE In the future Uint8 might not be large enough
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indicies), gl.STATIC_DRAW);
 
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.verticies, gl.STATIC_DRAW);
 
     // -- Init Texture
     this.diffuse = gl.createTexture();
@@ -71,7 +104,9 @@ export default class Foo {
 
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.vertexAttribPointer(this.programInfo.locations.attribute.position, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this.programInfo.locations.attribute.position, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
     const projectionMatrix = mat4.create();
     mat4.perspective(
@@ -106,7 +141,7 @@ export default class Foo {
       false,
       modelMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawElements(gl.TRIANGLES, this.indicies.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
   }
 

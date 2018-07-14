@@ -32,12 +32,12 @@ export default class Test {
     });
 
     this.positions = [
-      -0.5, -0.8, 0.0, 1.0,
-      -0.5, 0.5, 0.0, 1.0,
-      0.5, 0.5, 0.0, 1.0,
-      0.5, 0.5, 0.0, 1.0,
-      0.5, -0.8, 0.0, 1.0,
-      -0.5, -0.8, 0.0, 1.0,
+      -0.5, -0.8, 0.0,
+      -0.5, 0.5, 0.0,
+      0.5, 0.5, 0.0,
+      0.5, 0.5, 0.0,
+      0.5, -0.8, 0.0,
+      -0.5, -0.8, 0.0,
     ];
 
     this.positionBuffer = gl.createBuffer();
@@ -71,7 +71,7 @@ export default class Test {
 
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.vertexAttribPointer(this.programInfo.locations.attribute.position, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this.programInfo.locations.attribute.position, 3, gl.FLOAT, false, 0, 0);
 
     const projectionMatrix = mat4.create();
     mat4.perspective(
