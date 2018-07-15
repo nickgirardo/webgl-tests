@@ -4,6 +4,8 @@ import * as fragSrc from "../shaders/screenSpace.frag";
 import * as vertSrc from "../shaders/mvp.vert";
 
 import * as lenna from "../../assets/img/lenna.png";
+
+import * as Model from "../model.js";
 import * as glm from "../gl-matrix.js";
 
 const mat4 = glm.mat4;
@@ -31,18 +33,28 @@ export default class Test {
       },
     });
 
-    this.positions = [
-      -0.5, -0.8, 0.0,
-      -0.5, 0.5, 0.0,
-      0.5, 0.5, 0.0,
-      0.5, 0.5, 0.0,
-      0.5, -0.8, 0.0,
-      -0.5, -0.8, 0.0,
-    ];
+    const positions = [
+      [ -0.5, -0.8, 0.0, ],
+      [ -0.5, 0.5, 0.0, ],
+      [ 0.5, 0.5, 0.0, ],
+      [ 0.5, 0.5, 0.0, ],
+      [ 0.5, -0.8, 0.0, ],
+      [ -0.5, -0.8, 0.0, ],
+    ].map(v => vec3.fromValues(...v));
+
+    const {indicies, verticies} = Model.build(positions, vec3.equals);
+
+    this.indicies = indicies;
+    this.verticies = verticies;
+
+    this.elementBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
+    // NOTE In the future Uint8 might not be large enough
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indicies), gl.STATIC_DRAW);
 
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.verticies, gl.STATIC_DRAW);
 
     // -- Init Texture
     this.diffuse = gl.createTexture();
@@ -72,6 +84,8 @@ export default class Test {
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
     gl.vertexAttribPointer(this.programInfo.locations.attribute.position, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
     const projectionMatrix = mat4.create();
     mat4.perspective(
@@ -106,7 +120,7 @@ export default class Test {
       false,
       modelMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawElements(gl.TRIANGLES, this.indicies.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
   }
  

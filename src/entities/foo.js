@@ -4,6 +4,8 @@ import * as fragSrc from "../shaders/screenSpaceInv.frag";
 import * as vertSrc from "../shaders/mvp.vert";
 
 import * as bold from "../../assets/img/boldAndBrash.png";
+
+import * as Model from "../model.js";
 import * as glm from "../gl-matrix.js";
 
 const mat4 = glm.mat4;
@@ -31,7 +33,7 @@ export default class Foo {
       },
     });
 
-    this.positions = [
+    const positions = [
       [ -0.8, -0.8, 0.0, ],
       [ -0.8, 0.8, 0.0, ],
       [ 0.8, 0.8, 0.0, ],
@@ -40,33 +42,10 @@ export default class Foo {
       [ -0.8, -0.8, 0.0, ],
     ].map(v => vec3.fromValues(...v));
 
-    // TODO this is poc, need to be cleaned and moved
-    function makeIndicies(inVerts) {
-      const indicies = [];
-      const verticies = [];
+    const {indicies, verticies} = Model.build(positions, vec3.equals);
 
-      inVerts.forEach(v=> {
-        // TODO this is awful
-        const reducer = (acc, val, ix) => {
-          if(acc !== -1) return acc;
-          if(vec3.equals(v,val)) return ix;
-          return -1;
-        };
-        const match = verticies.reduce(reducer, -1);
-        if(match !== -1) {
-          indicies.push(match);
-        } else {
-          indicies.push(verticies.length);
-          verticies.push(v);
-        }
-      });
-      return { indicies, verticies }
-    }
-
-    const {indicies, verticies} = makeIndicies(this.positions);
-    this.indicies = indicies
-    this.verticies = new Float32Array(verticies.length * 3);
-    verticies.forEach((v,ix) => this.verticies.set(v, ix * 3)); // Flatten
+    this.indicies = indicies;
+    this.verticies = verticies;
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
