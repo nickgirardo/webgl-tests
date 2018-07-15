@@ -1,7 +1,7 @@
 import * as Util from "../util.js";
 
-import * as fragSrc from "../shaders/screenSpaceInv.frag";
-import * as vertSrc from "../shaders/mvp.vert";
+import * as fragSrc from "../../assets/shaders/screenSpaceInv.frag";
+import * as vertSrc from "../../assets/shaders/mvp.vert";
 
 import * as bold from "../../assets/img/boldAndBrash.png";
 
