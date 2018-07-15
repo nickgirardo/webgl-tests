@@ -2,16 +2,16 @@
 /*
  * @function build
  *
- * @param Array(Float) verts Input verticies, can be Typed Array
+ * @param Array(Float) verts Input vertices, can be Typed Array
  * @param Function comparator Predicate function testing for equality
  * @param Boolean flatten (default true) should the resulting vertex array be flattened?
  *
- * @returns {indicies: Array(Int), verticies: Array(Array(Float))|Float32Array}
+ * @returns {indicies: Array(Int), vertices: Array(Array(Float))|Float32Array}
  *
  */
 export function build(verts, comparator, flatten=true) {
   const indicies = [];
-  const verticies = [];
+  const vertices = [];
 
   verts.forEach(v=> {
     // TODO this is awful
@@ -20,23 +20,23 @@ export function build(verts, comparator, flatten=true) {
       if(comparator(v,val)) return ix;
       return -1;
     };
-    const match = verticies.reduce(reducer, -1);
+    const match = vertices.reduce(reducer, -1);
     if(match !== -1) {
       indicies.push(match);
     } else {
-      indicies.push(verticies.length);
-      verticies.push(v);
+      indicies.push(vertices.length);
+      vertices.push(v);
     }
   });
 
   if(!flatten)
-    return { indicies, verticies }
+    return { indicies, vertices }
 
-  // Flatten verticies to single Float32Array
-  const elementsEach = verticies[0].length;
-  const vertBuffer = new Float32Array(verticies.length * elementsEach);
-  verticies.forEach((v,ix) => vertBuffer.set(v, ix * elementsEach));
+  // Flatten vertices to single Float32Array
+  const elementsEach = vertices[0].length;
+  const vertBuffer = new Float32Array(vertices.length * elementsEach);
+  vertices.forEach((v,ix) => vertBuffer.set(v, ix * elementsEach));
 
-  return { indicies, verticies: vertBuffer };
+  return { indicies, vertices: vertBuffer };
 
 }

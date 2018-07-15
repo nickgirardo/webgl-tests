@@ -42,10 +42,10 @@ export default class Test {
       [ -0.5, -0.8, 0.0, ],
     ].map(v => vec3.fromValues(...v));
 
-    const {indicies, verticies} = Model.build(positions, vec3.equals);
+    const {indicies, vertices} = Model.build(positions, vec3.equals);
 
     this.indicies = indicies;
-    this.verticies = verticies;
+    this.vertices = vertices;
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
@@ -54,7 +54,7 @@ export default class Test {
 
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.verticies, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
 
     // -- Init Texture
     this.diffuse = gl.createTexture();

@@ -13,8 +13,6 @@ const vec3 = glm.vec3;
 
 import cubeModel from "../../assets/objects/cube.obj";
 
-console.log(cubeModel);
-
 export default class Test {
 
   constructor() {}
@@ -38,7 +36,7 @@ export default class Test {
     });
 
     this.indicies = cubeModel.indices;
-    this.verticies = new Float32Array(cubeModel.vertices);
+    this.vertices = new Float32Array(cubeModel.vertices);
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
@@ -47,7 +45,7 @@ export default class Test {
 
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.verticies, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
 
     // -- Init Texture
     this.diffuse = gl.createTexture();
