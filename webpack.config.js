@@ -9,6 +9,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.obj$/,
+        loader: 'webpack-obj-loader',
+      },
+      {
         test: /\.png$/,
         loader: 'base64-inline-loader?name=[name].[ext]',
       },

@@ -4,6 +4,7 @@ import * as Mouse from "./mouse.js";
 import * as glm from "./gl-matrix.js";
 
 import Camera from "./entities/camera.js";
+import Cube from "./entities/cube.js";
 import Test from "./entities/test.js";
 import Foo from "./entities/foo.js";
 
@@ -56,8 +57,9 @@ function init() {
   const pos2 = glm.vec3.fromValues(-1, 0, 3);
   const pos3 = glm.vec3.fromValues(0, 0, 8);
 
+  const cubePos = glm.vec3.fromValues(0, 0, 5);
 
-  Promise.all([Test.create(gl, pos1), Test.create(gl, pos2), Foo.create(gl, pos3)]).then((tests) => {
+  Promise.all([Test.create(gl, pos1), Test.create(gl, pos2), Foo.create(gl, pos3), Cube.create(gl, cubePos)]).then((tests) => {
     tests.forEach(t=>scene.push(t));
 
     scene.push(camera);
