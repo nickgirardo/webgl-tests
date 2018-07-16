@@ -35,13 +35,13 @@ export default class Test {
       },
     });
 
-    this.indicies = cubeModel.indices;
+    this.indices = cubeModel.indices;
     this.vertexData = new Float32Array(Model.fromObj(cubeModel));
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
     // NOTE In the future Uint8 might not be large enough
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indicies), gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indices), gl.STATIC_DRAW);
 
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -113,7 +113,7 @@ export default class Test {
       false,
       modelMatrix);
 
-    gl.drawElements(gl.TRIANGLES, this.indicies.length, gl.UNSIGNED_BYTE, 0);
+    gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.vertex);
   }
  

@@ -42,15 +42,15 @@ export default class Test {
       [ -0.5, -0.8, 0.0, ],
     ].map(v => vec3.fromValues(...v));
 
-    const {indicies, vertices} = Model.build(positions, vec3.equals);
+    const {indices, vertices} = Model.build(positions, vec3.equals);
 
-    this.indicies = indicies;
+    this.indices = indices;
     this.vertices = vertices;
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
     // NOTE In the future Uint8 might not be large enough
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indicies), gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indices), gl.STATIC_DRAW);
 
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
@@ -120,7 +120,7 @@ export default class Test {
       false,
       modelMatrix);
 
-    gl.drawElements(gl.TRIANGLES, this.indicies.length, gl.UNSIGNED_BYTE, 0);
+    gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
   }
  
