@@ -40,3 +40,12 @@ export function build(verts, comparator, flatten=true) {
   return { indicies, vertices: vertBuffer };
 
 }
+
+export function fromObj(obj) {
+  let ret = [];
+  const stride = obj.textureStride;
+  for(let i=0; i<obj.textures.length/stride; i++) {
+    ret.push(...obj.vertices.slice(i*3,i*3+3), ...obj.textures.slice(i*stride, i*stride+stride));
+  }
+  return ret;
+}

@@ -1,9 +1,9 @@
 import * as Util from "../util.js";
 
-import * as fragSrc from "../../assets/shaders/screenSpace.frag";
-import * as vertSrc from "../../assets/shaders/mvp.vert";
+import * as fragSrc from "../../assets/shaders/basicTexture.frag";
+import * as vertSrc from "../../assets/shaders/mvpUV.vert";
 
-import * as lenna from "../../assets/img/lenna.png";
+import * as crateDiffuse from "../../assets/img/crate.png";
 
 import * as Model from "../model.js";
 import * as glm from "../gl-matrix.js";
@@ -19,33 +19,33 @@ export default class Test {
 
   async init(gl, pos) {
     this.pos = pos;
-    this.diffuseImg = await Util.loadImage(lenna);
+    this.diffuseImg = await Util.loadImage(crateDiffuse);
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
       uniform: {
         diffuse: 'diffuse',
-        imageSize: 'imageSize',
         modelMatrix: 'model',
         viewMatrix: 'view',
         projectionMatrix : 'projection',
       },
       attribute: {
-        position: 'position',
+        vertex: 'vertex',
+        uv: 'vertex_uv',
       },
     });
 
     this.indicies = cubeModel.indices;
-    this.vertices = new Float32Array(cubeModel.vertices);
+    this.vertexData = new Float32Array(Model.fromObj(cubeModel));
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
     // NOTE In the future Uint8 might not be large enough
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indicies), gl.STATIC_DRAW);
 
-    this.positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.vertexData, gl.STATIC_DRAW);
 
     // -- Init Texture
     this.diffuse = gl.createTexture();
@@ -66,15 +66,17 @@ export default class Test {
   draw(canvas, gl, camera) {
     gl.useProgram(this.programInfo.program);
 
-    gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 3, canvas.height / 3);
-
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.diffuse);
     gl.uniform1i(this.programInfo.locations.uniform.diffuse, 0);
 
-    gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-    gl.vertexAttribPointer(this.programInfo.locations.attribute.position, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+
+    gl.enableVertexAttribArray(this.programInfo.locations.attribute.vertex);
+    gl.vertexAttribPointer(this.programInfo.locations.attribute.vertex, 3, gl.FLOAT, false, 5*4, 0);
+
+    gl.enableVertexAttribArray(this.programInfo.locations.attribute.uv);
+    gl.vertexAttribPointer(this.programInfo.locations.attribute.uv, 2, gl.FLOAT, true, 5*4, 3*4);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
@@ -112,7 +114,7 @@ export default class Test {
       modelMatrix);
 
     gl.drawElements(gl.TRIANGLES, this.indicies.length, gl.UNSIGNED_BYTE, 0);
-    gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
+    gl.disableVertexAttribArray(this.programInfo.locations.attribute.vertex);
   }
  
 }
