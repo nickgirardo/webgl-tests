@@ -8,6 +8,7 @@ const mat4 = glm.mat4;
 const vec3 = glm.vec3;
 
 const up = vec3.fromValues(0, 1, 0);
+const movementVelocity = 0.1;
 
 export default class Camera {
 
@@ -48,8 +49,13 @@ export default class Camera {
     else
       directionZ = 0;
 
+
+    const viewDir = Math.atan2(this.direction[0], this.direction[2]);
     const movementDir = vec3.create();
-    vec3.rotateY(movementDir, vec3.fromValues(directionX * 0.1, 0, directionZ * 0.1), vec3.create(), rotationX);
+    vec3.rotateY(movementDir, vec3.fromValues(directionX, 0, directionZ), vec3.create(), viewDir);
+    // Branch here to avoid divide by zero
+    if(vec3.length(movementDir) > 0)
+      vec3.scale(movementDir, movementDir, 1/vec3.length(movementDir) * movementVelocity)
 
     vec3.add(this.pos, this.pos, movementDir)
     const aimVector = vec3.create();
