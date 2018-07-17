@@ -19,6 +19,18 @@ export default class Test {
     this.pos = pos;
     this.diffuseImg = await Util.loadImage(lenna);
 
+    // Only need to create these matrices once
+    this.modelMatrix = mat4.create();
+    this.projectionMatrix = mat4.create();
+    // This is currently constant
+    mat4.perspective(
+      this.projectionMatrix, // Destination matrix
+      45 * Math.PI / 180, // FOV
+      16/9, // Aspect ratio
+      0.1, // Near clipping plane
+      100.0, // Far clipping plane
+    );
+
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
       uniform: {
@@ -87,28 +99,17 @@ export default class Test {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
-    const projectionMatrix = mat4.create();
-    mat4.perspective(
-      projectionMatrix, // Destination matrix
-      45 * Math.PI / 180, // FOV
-      16/9, // Aspect ratio
-      0.1, // Near clipping plane
-      100.0, // Far clipping plane
-    );
-
     const viewMatrix = camera;
 
-    const modelMatrix = mat4.create();
-    mat4.translate(
-      modelMatrix, // Destination matrix
-      modelMatrix, // In matrix
+    mat4.fromTranslation(
+      this.modelMatrix,
       this.pos
     );
 
     gl.uniformMatrix4fv(
       this.programInfo.locations.uniform.projectionMatrix,
       false,
-      projectionMatrix);
+      this.projectionMatrix);
 
     gl.uniformMatrix4fv(
       this.programInfo.locations.uniform.viewMatrix,
@@ -118,7 +119,7 @@ export default class Test {
     gl.uniformMatrix4fv(
       this.programInfo.locations.uniform.modelMatrix,
       false,
-      modelMatrix);
+      this.modelMatrix);
 
     gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);

@@ -59,7 +59,12 @@ function init() {
 
   const cubePos = glm.vec3.fromValues(0, 0, 5);
 
-  Promise.all([Test.create(gl, pos1), Test.create(gl, pos2), Foo.create(gl, pos3), Cube.create(gl, cubePos)]).then((tests) => {
+  Promise.all([
+    Test.create(gl, pos1),
+    Test.create(gl, pos2),
+    Foo.create(gl, pos3),
+    Cube.create(gl, cubePos),
+  ]).then((tests) => {
     tests.forEach(t=>scene.push(t));
 
     scene.push(camera);
