@@ -34,31 +34,16 @@ export default class Camera {
     this.totalRotX -= rotationX;
     this.totalRotY -= rotationY;
 
-    // TODO this shouldn't be here, move this to utilities?
-    function rotate(out, vec, q) {
-      const temp = quat.fromValues(vec[0], vec[1], vec[2], 0);
-      const temp2 = quat.create();
-      quat.multiply(temp2, q, temp);
-      quat.conjugate(temp, q);
-      quat.multiply(temp2, temp2, temp);
-
-      out[0] = temp2[0];
-      out[1] = temp2[1];
-      out[2] = temp2[2];
-      return out;
-    }
-
     // Not sure if there is a better way to do this, this seems bad
     // First rotate by the x amount
     this.rotato = quat.setAxisAngle(this.rotato, vec3.fromValues(0,1,0), this.totalRotX);
-    rotate(this.direction, vec3.fromValues(0,0,1), this.rotato);
+    Util.rotate(this.direction, vec3.fromValues(0,0,1), this.rotato);
     // Next find the axis for the next rotation
     // We need the axis of rotation to be normal to the direction vector and the y axis
     vec3.cross(this.directionNorm, this.direction, vec3.fromValues(0,1,0));
     // Now rotate again
     this.rotato = quat.setAxisAngle(this.rotato, this.directionNorm, this.totalRotY);
-    rotate(this.direction, this.direction, this.rotato);
-
+    Util.rotate(this.direction, this.direction, this.rotato);
 
     // Janky, clean up
     let directionX = 0;

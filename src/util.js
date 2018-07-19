@@ -1,4 +1,6 @@
 
+import * as glm from "./gl-matrix.js";
+
 /*
  * @function loadImage
  *
@@ -127,3 +129,35 @@ export function resize(gl, canvas, aspectRatio) {
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
+/*
+ * @function rotate
+ *
+ * @param vec3 out Destination vector
+ * @param vec3 vec Target vector to be rotated
+ * @param quat q Quaternion to rotate vector about
+ *
+ * @returns vec3 out
+ *
+ * Rotate a vec3 about a quaternion
+ */
+export const rotate = (function() {
+  // Temp wouldn't be required if input was vec4
+  const temp = glm.quat.create();
+  const conj = glm.quat.create();
+
+  return function(out, vec, q) {
+      temp[0] = vec[0];
+      temp[1] = vec[1];
+      temp[2] = vec[2];
+
+      glm.quat.conjugate(conj, q);
+
+      glm.quat.multiply(temp, q, temp);
+      glm.quat.multiply(temp, temp, conj);
+
+      out[0] = temp[0];
+      out[1] = temp[1];
+      out[2] = temp[2];
+      return out;
+    }
+})();
