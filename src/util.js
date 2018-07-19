@@ -1,5 +1,5 @@
 
-import * as glm from "./gl-matrix.js";
+import { quat } from "./gl-matrix.js";
 
 /*
  * @function loadImage
@@ -142,18 +142,18 @@ export function resize(gl, canvas, aspectRatio) {
  */
 export const rotate = (function() {
   // Temp wouldn't be required if input was vec4
-  const temp = glm.quat.create();
-  const conj = glm.quat.create();
+  const temp = quat.create();
+  const conj = quat.create();
 
   return function(out, vec, q) {
       temp[0] = vec[0];
       temp[1] = vec[1];
       temp[2] = vec[2];
 
-      glm.quat.conjugate(conj, q);
+      quat.conjugate(conj, q);
 
-      glm.quat.multiply(temp, q, temp);
-      glm.quat.multiply(temp, temp, conj);
+      quat.multiply(temp, q, temp);
+      quat.multiply(temp, temp, conj);
 
       out[0] = temp[0];
       out[1] = temp[1];

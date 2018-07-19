@@ -2,11 +2,7 @@ import * as Util from "../util.js";
 import * as Keyboard from "../keyboard.js";
 import * as Mouse from "../mouse.js";
 
-import * as glm from "../gl-matrix.js";
-
-const mat4 = glm.mat4;
-const vec3 = glm.vec3;
-const quat = glm.quat;
+import {mat4, vec3, quat} from "../gl-matrix.js";
 
 const up = vec3.fromValues(0, 1, 0);
 const movementVelocity = 0.1;

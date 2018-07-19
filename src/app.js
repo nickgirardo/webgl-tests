@@ -1,7 +1,7 @@
 import * as Util from "./util.js";
 import * as Keyboard from "./keyboard.js";
 import * as Mouse from "./mouse.js";
-import * as glm from "./gl-matrix.js";
+import { vec3 } from "./gl-matrix.js";
 
 import Camera from "./entities/camera.js";
 import Cube from "./entities/cube.js";
@@ -16,7 +16,7 @@ const aspectRatio = 16/9;
 
 const scene = [];
 // Create a new camera at the origin
-const camera = new Camera(glm.vec3.fromValues(0, 0, 0));
+const camera = new Camera(vec3.fromValues(0, 0, 0));
 
 function draw() {
   gl.clearColor(0.2, 0.2, 0.2, 1.0); // Clear background with dark grey color
@@ -53,11 +53,11 @@ function init() {
     return;
   }
 
-  const pos1 = glm.vec3.fromValues(1, 0, 3);
-  const pos2 = glm.vec3.fromValues(-1, 0, 3);
-  const pos3 = glm.vec3.fromValues(0, 0, 8);
+  const pos1 = vec3.fromValues(1, 0, 3);
+  const pos2 = vec3.fromValues(-1, 0, 3);
+  const pos3 = vec3.fromValues(0, 0, 8);
 
-  const cubePos = glm.vec3.fromValues(0, 0, 5);
+  const cubePos = vec3.fromValues(0, 0, 5);
 
   Promise.all([
     Test.create(gl, pos1),

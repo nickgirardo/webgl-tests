@@ -6,10 +6,7 @@ import * as vertSrc from "../../assets/shaders/mvp.vert";
 import * as bold from "../../assets/img/boldAndBrash.png";
 
 import * as Model from "../model.js";
-import * as glm from "../gl-matrix.js";
-
-const mat4 = glm.mat4;
-const vec3 = glm.vec3;
+import { vec3, mat4 } from "../gl-matrix.js";
 
 export default class Foo {
 
