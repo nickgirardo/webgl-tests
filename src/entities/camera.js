@@ -19,7 +19,7 @@ export default class Camera {
     this.direction = vec3.fromValues(0, 0, 1);
     this.directionNorm = vec3.create();
 
-    this.rotato = quat.create();
+    this.rotQuat = quat.create();
     this.totalRotX = 0;
     this.totalRotY = 0;
     this.update();
@@ -28,41 +28,31 @@ export default class Camera {
   draw() {}
 
   update() {
-    const rotationX = Mouse.movementX * 0.001;
-    const rotationY = Mouse.movementY * 0.001;
+    function moreRecentPress(a, b) {
+      if (Keyboard.keys[a] && Keyboard.keys[b])
+        return (Keyboard.timestamps[b] > Keyboard.timestamps[a]) ? -1 : 1;
+      else if (Keyboard.keys[a] || Keyboard.keys[b])
+        return Keyboard.keys[b] ? -1 : 1;
+      else
+        return 0;
+    }
 
-    this.totalRotX -= rotationX;
-    this.totalRotY -= rotationY;
+    let directionX = moreRecentPress(65, 68);
+    let directionZ = moreRecentPress(87, 83);
+
+    this.totalRotX -= Mouse.movementX * 0.001;
+    this.totalRotY -= Mouse.movementY * 0.001;
 
     // Not sure if there is a better way to do this, this seems bad
     // First rotate by the x amount
-    this.rotato = quat.setAxisAngle(this.rotato, vec3.fromValues(0,1,0), this.totalRotX);
-    Util.rotate(this.direction, vec3.fromValues(0,0,1), this.rotato);
+    this.rotQuat = quat.setAxisAngle(this.rotQuat, vec3.fromValues(0,1,0), this.totalRotX);
+    Util.rotate(this.direction, vec3.fromValues(0,0,1), this.rotQuat);
     // Next find the axis for the next rotation
     // We need the axis of rotation to be normal to the direction vector and the y axis
     vec3.cross(this.directionNorm, this.direction, vec3.fromValues(0,1,0));
     // Now rotate again
-    this.rotato = quat.setAxisAngle(this.rotato, this.directionNorm, this.totalRotY);
-    Util.rotate(this.direction, this.direction, this.rotato);
-
-    // Janky, clean up
-    let directionX = 0;
-    if (Keyboard.keys[65] && Keyboard.keys[68])
-      directionX = (Keyboard.timestamps[68] > Keyboard.timestamps[65]) ? -1 : 1;
-    else if (Keyboard.keys[65] || Keyboard.keys[68])
-      directionX = Keyboard.keys[68] ? -1 : 1;
-    else
-      directionX = 0;
-
-    // Janky, clean up
-    let directionZ = 0;
-    if (Keyboard.keys[83] && Keyboard.keys[87])
-      directionZ = (Keyboard.timestamps[83] > Keyboard.timestamps[87]) ? -1 : 1;
-    else if (Keyboard.keys[83] || Keyboard.keys[87])
-      directionZ = Keyboard.keys[83] ? -1 : 1;
-    else
-      directionZ = 0;
-
+    this.rotQuat = quat.setAxisAngle(this.rotQuat, this.directionNorm, this.totalRotY);
+    Util.rotate(this.direction, this.direction, this.rotQuat);
 
     const viewDir = Math.atan2(this.direction[0], this.direction[2]);
     const movementDir = vec3.create();
