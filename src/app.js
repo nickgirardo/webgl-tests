@@ -7,6 +7,7 @@ import Camera from "./entities/camera.js";
 import Cube from "./entities/cube.js";
 import Test from "./entities/test.js";
 import Foo from "./entities/foo.js";
+import Skybox from "./entities/skybox.js";
 
 // TODO: consider reducing amount of global variables
 const canvas = document.querySelector('canvas');
@@ -64,6 +65,7 @@ function init() {
     Test.create(gl, pos2),
     Foo.create(gl, pos3),
     Cube.create(gl, cubePos),
+    Skybox.create(gl)
   ]).then((tests) => {
     tests.forEach(t=>scene.push(t));
 
