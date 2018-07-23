@@ -1,6 +1,6 @@
-# Blender v2.78 (sub 0) OBJ File: ''
+# Blender v2.78 (sub 0) OBJ File: 'crate.blend'
 # www.blender.org
-mtllib cube.mtl
+mtllib crate.mtl
 o Cube
 v 0.253958 -0.090799 -0.836384
 v 0.691392 -0.541040 -0.039116

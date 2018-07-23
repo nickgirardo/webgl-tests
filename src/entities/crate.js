@@ -8,9 +8,9 @@ import * as crateDiffuse from "../../assets/img/crate.png";
 import * as Model from "../model.js";
 import { vec3, mat4 } from "../gl-matrix.js";
 
-import cubeModel from "../../assets/objects/cube.obj";
+import crateModel from "../../assets/objects/crate/crate.obj";
 
-export default class Test {
+export default class Crate {
 
   constructor() {}
 
@@ -44,8 +44,8 @@ export default class Test {
       },
     });
 
-    this.indices = cubeModel.indices;
-    this.vertexData = new Float32Array(Model.fromObj(cubeModel));
+    this.indices = crateModel.indices;
+    this.vertexData = new Float32Array(Model.fromObj(crateModel));
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
@@ -67,7 +67,7 @@ export default class Test {
 
   // Janky hack because I want an asynchronous constructor
   static async create(gl, pos) {
-    const o = new Test();
+    const o = new Crate();
     await o.init(gl, pos);
     return o;
   }

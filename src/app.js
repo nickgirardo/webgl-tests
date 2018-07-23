@@ -4,7 +4,7 @@ import * as Mouse from "./mouse.js";
 import { vec3 } from "./gl-matrix.js";
 
 import Camera from "./entities/camera.js";
-import Cube from "./entities/cube.js";
+import Crate from "./entities/crate.js";
 import Test from "./entities/test.js";
 import Foo from "./entities/foo.js";
 import Skybox from "./entities/skybox.js";
@@ -58,13 +58,13 @@ function init() {
   const pos2 = vec3.fromValues(-1, 0, 3);
   const pos3 = vec3.fromValues(0, 0, 8);
 
-  const cubePos = vec3.fromValues(0, 0, 5);
+  const cratePos = vec3.fromValues(0, 0, 5);
 
   Promise.all([
     Test.create(gl, pos1),
     Test.create(gl, pos2),
     Foo.create(gl, pos3),
-    Cube.create(gl, cubePos),
+    Crate.create(gl, cratePos),
     Skybox.create(gl)
   ]).then((tests) => {
     tests.forEach(t=>scene.push(t));
