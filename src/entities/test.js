@@ -1,12 +1,12 @@
-import * as Util from "../util.js";
+import * as Util from "../engine/util.js";
 
 import * as fragSrc from "../../assets/shaders/screenSpace.frag";
 import * as vertSrc from "../../assets/shaders/mvp.vert";
 
 import * as lenna from "../../assets/img/lenna.png";
 
-import * as Model from "../model.js";
-import { vec3, mat4 } from "../gl-matrix.js";
+import * as Model from "../engine/model.js";
+import { vec3, mat4 } from "../engine/gl-matrix.js";
 
 export default class Test {
 

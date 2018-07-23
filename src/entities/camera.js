@@ -1,8 +1,8 @@
-import * as Util from "../util.js";
-import * as Keyboard from "../keyboard.js";
-import * as Mouse from "../mouse.js";
+import * as Util from "../engine/util.js";
+import * as Keyboard from "../engine/keyboard.js";
+import * as Mouse from "../engine/mouse.js";
 
-import {mat4, vec3, quat} from "../gl-matrix.js";
+import {mat4, vec3, quat} from "../engine/gl-matrix.js";
 
 const up = vec3.fromValues(0, 1, 0);
 const movementVelocity = 0.1;

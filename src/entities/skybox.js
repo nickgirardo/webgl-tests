@@ -1,4 +1,4 @@
-import * as Util from "../util.js";
+import * as Util from "../engine/util.js";
 
 import * as fragSrc from "../../assets/shaders/cubemap.frag";
 import * as vertSrc from "../../assets/shaders/skybox.vert";
@@ -10,8 +10,8 @@ import * as posXImg from "../../assets/img/skybox/posx.png";
 import * as posYImg from "../../assets/img/skybox/posy.png";
 import * as posZImg from "../../assets/img/skybox/posz.png";
 
-import * as Model from "../model.js";
-import { vec3, mat4 } from "../gl-matrix.js";
+import * as Model from "../engine/model.js";
+import { vec3, mat4 } from "../engine/gl-matrix.js";
 
 export default class Foo {
 

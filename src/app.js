@@ -1,7 +1,7 @@
-import * as Util from "./util.js";
-import * as Keyboard from "./keyboard.js";
-import * as Mouse from "./mouse.js";
-import { vec3 } from "./gl-matrix.js";
+import * as Util from "./engine/util.js";
+import * as Keyboard from "./engine/keyboard.js";
+import * as Mouse from "./engine/mouse.js";
+import { vec3 } from "./engine/gl-matrix.js";
 
 import Camera from "./entities/camera.js";
 import Crate from "./entities/crate.js";

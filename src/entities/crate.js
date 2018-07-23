@@ -1,12 +1,12 @@
-import * as Util from "../util.js";
+import * as Util from "../engine/util.js";
 
 import * as fragSrc from "../../assets/shaders/basicTexture.frag";
 import * as vertSrc from "../../assets/shaders/mvpUV.vert";
 
 import * as crateDiffuse from "../../assets/img/crate.png";
 
-import * as Model from "../model.js";
-import { vec3, mat4 } from "../gl-matrix.js";
+import * as Model from "../engine/model.js";
+import { vec3, mat4 } from "../engine/gl-matrix.js";
 
 import crateModel from "../../assets/objects/crate/crate.obj";
 
