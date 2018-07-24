@@ -122,4 +122,6 @@ export default class Foo {
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
   }
 
+  update() {}
+
 }

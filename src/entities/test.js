@@ -121,5 +121,7 @@ export default class Test {
     gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.position);
   }
+
+  update() {}
  
 }

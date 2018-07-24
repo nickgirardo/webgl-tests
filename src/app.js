@@ -36,9 +36,9 @@ function update() {
   // currently camera must be updated before mouse
   // this is probably undesired behaviour and updates
   // should be roughly possible in an order so try to fix
-  camera.update();
-  Mouse.update();
+  scene.forEach(e=>e.update())
   draw();
+  Mouse.update();
   window.requestAnimationFrame(update);
 }
 
@@ -59,6 +59,7 @@ function init() {
   const pos3 = vec3.fromValues(0, 0, 8);
 
   const cratePos = vec3.fromValues(0, 0, 5);
+
 
   Promise.all([
     Test.create(gl, pos1),

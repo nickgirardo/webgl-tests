@@ -1,12 +1,14 @@
 import * as Util from "../engine/util.js";
 
 import * as fragSrc from "../../assets/shaders/basicTexture.frag";
-import * as vertSrc from "../../assets/shaders/mvpUV.vert";
+import * as vertSrc from "../../assets/shaders/testTrans.vert";
 
 import * as crateDiffuse from "../../assets/img/crate.png";
 
 import * as Model from "../engine/model.js";
-import { vec3, mat4 } from "../engine/gl-matrix.js";
+import { vec3, mat4, quat } from "../engine/gl-matrix.js";
+import { Animation, Keyframe } from "../engine/animation.js";
+import Animator from "../engine/animator.js";
 
 import crateModel from "../../assets/objects/crate/crate.obj";
 
@@ -17,6 +19,21 @@ export default class Crate {
   async init(gl, pos) {
     this.pos = pos;
     this.diffuseImg = await Util.loadImage(crateDiffuse);
+
+    const start = quat.create();
+    const rot1 = quat.create();
+    const rot2 = quat.create();
+    quat.rotateY(rot1, rot1, Math.PI/2);
+    quat.rotateZ(rot2, rot1, Math.PI/2);
+
+    this.animator = new Animator(this);
+    this.animator.animate(new Animation([
+      new Keyframe(0, start),
+      new Keyframe(60, rot1),
+      new Keyframe(90, rot2),
+    ], 150));
+
+    this.transformMatrix = mat4.create();
 
     // Only need to create these matrices once
     this.modelMatrix = mat4.create();
@@ -37,6 +54,7 @@ export default class Crate {
         modelMatrix: 'model',
         viewMatrix: 'view',
         projectionMatrix : 'projection',
+        transformMatrix: 'transform',
       },
       attribute: {
         vertex: 'vertex',
@@ -111,8 +129,17 @@ export default class Crate {
       false,
       this.modelMatrix);
 
+    gl.uniformMatrix4fv(
+      this.programInfo.locations.uniform.transformMatrix,
+      false,
+      this.transformMatrix);
+
     gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0);
     gl.disableVertexAttribArray(this.programInfo.locations.attribute.vertex);
+  }
+
+  update() {
+    this.animator.update();
   }
  
 }
