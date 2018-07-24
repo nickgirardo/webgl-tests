@@ -131,7 +131,7 @@ export default class Foo {
     gl.uniform2f(this.programInfo.locations.uniform.imageSize, canvas.width / 16, canvas.height / 9);
 
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_CUBEMAP, this.cubemap);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.cubemap);
     gl.uniform1i(this.programInfo.locations.uniform.diffuse, 0);
 
     gl.enableVertexAttribArray(this.programInfo.locations.attribute.position);
