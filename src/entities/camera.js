@@ -10,7 +10,7 @@ const movementVelocity = 0.1;
 export default class Camera {
 
   constructor(pos) {
-    this.matrix = mat4.create();
+    this.viewMatrix = mat4.create();
     this.pos = pos;
     this.direction = vec3.fromValues(0, 0, 1);
     this.directionNorm = vec3.create();
@@ -18,6 +18,18 @@ export default class Camera {
     this.rotQuat = quat.create();
     this.totalRotX = 0;
     this.totalRotY = 0;
+
+    this.viewProjMatrix = mat4.create();
+    this.projectionMatrix = mat4.create();
+    // This is currently constant
+    mat4.perspective(
+      this.projectionMatrix, // Destination matrix
+      45 * Math.PI / 180, // FOV
+      16/9, // Aspect ratio
+      0.1, // Near clipping plane
+      100.0, // Far clipping plane
+    );
+
     this.update();
   }
 
@@ -60,7 +72,9 @@ export default class Camera {
     vec3.add(this.pos, this.pos, movementDir)
     const aimVector = vec3.create();
     vec3.add(aimVector, this.pos, this.direction);
-    mat4.lookAt(this.matrix, this.pos, aimVector, up);
+    mat4.lookAt(this.viewMatrix, this.pos, aimVector, up);
+
+    mat4.mul(this.viewProjMatrix, this.projectionMatrix, this.viewMatrix);
 
   }
 }

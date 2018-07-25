@@ -23,15 +23,6 @@ export default class Foo {
 
     // Only need to create these matrices once
     this.modelMatrix = mat4.create();
-    this.projectionMatrix = mat4.create();
-    // This is currently constant
-    mat4.perspective(
-      this.projectionMatrix, // Destination matrix
-      45 * Math.PI / 180, // FOV
-      16/9, // Aspect ratio
-      0.1, // Near clipping plane
-      100.0, // Far clipping plane
-    );
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
@@ -140,7 +131,7 @@ export default class Foo {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
-    const viewMatrix = camera;
+    const viewMatrix = camera.viewMatrix;
     // These columns in the view matrix relate to the translation of the model
     // The skybox should remain fixed so these are zeroed
     viewMatrix[12] = 0;
@@ -150,7 +141,7 @@ export default class Foo {
     gl.uniformMatrix4fv(
       this.programInfo.locations.uniform.projectionMatrix,
       false,
-      this.projectionMatrix);
+      camera.projectionMatrix);
 
     gl.uniformMatrix4fv(
       this.programInfo.locations.uniform.viewMatrix,

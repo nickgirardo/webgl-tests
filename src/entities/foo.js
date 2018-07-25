@@ -18,15 +18,6 @@ export default class Foo {
 
     // Only need to create these matrices once
     this.modelMatrix = mat4.create();
-    this.projectionMatrix = mat4.create();
-    // This is currently constant
-    mat4.perspective(
-      this.projectionMatrix, // Destination matrix
-      45 * Math.PI / 180, // FOV
-      16/9, // Aspect ratio
-      0.1, // Near clipping plane
-      100.0, // Far clipping plane
-    );
 
     // Create program and link shaders
     this.programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
@@ -34,8 +25,7 @@ export default class Foo {
         diffuse: 'diffuse',
         imageSize: 'imageSize',
         modelMatrix: 'model',
-        viewMatrix: 'view',
-        projectionMatrix : 'projection',
+        viewProjMatrix: 'viewProj',
       },
       attribute: {
         position: 'position',
@@ -96,22 +86,15 @@ export default class Foo {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
-    const viewMatrix = camera;
-
     mat4.fromTranslation(
       this.modelMatrix,
       this.pos
     );
 
     gl.uniformMatrix4fv(
-      this.programInfo.locations.uniform.projectionMatrix,
+      this.programInfo.locations.uniform.viewProjMatrix,
       false,
-      this.projectionMatrix);
-
-    gl.uniformMatrix4fv(
-      this.programInfo.locations.uniform.viewMatrix,
-      false,
-      viewMatrix);
+      camera.viewProjMatrix);
 
     gl.uniformMatrix4fv(
       this.programInfo.locations.uniform.modelMatrix,

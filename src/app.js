@@ -29,7 +29,7 @@ function draw() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Draw each individual element
-  scene.forEach(t=>t.draw(canvas, gl, camera.matrix));
+  scene.forEach(t=>t.draw(canvas, gl, camera));
 }
 
 function update() {
