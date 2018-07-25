@@ -19,10 +19,12 @@
   "homepage": "https://github.com/nickgirardo/webgl-tests#readme",
   "devDependencies": {
     "base64-inline-loader": "^1.1.1",
+    "dae-loader": "git+https://github.com/wenshiqi0/dae-loader.git",
     "raw-loader": "^0.5.1",
     "webpack": "^4.14.0",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4",
     "webpack-obj-loader": "^1.0.4"
-  }
+  },
+  "dependencies": {}
 }

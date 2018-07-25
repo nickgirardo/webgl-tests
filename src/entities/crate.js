@@ -10,7 +10,7 @@ import { vec3, mat4, quat } from "../engine/gl-matrix.js";
 import { Animation, Keyframe } from "../engine/animation.js";
 import Animator from "../engine/animator.js";
 
-import crateModel from "../../assets/objects/crate/crate.obj";
+import crateModel from "../../assets/objects/crate/crate.dae";
 
 export default class Crate {
 
@@ -52,8 +52,9 @@ export default class Crate {
       },
     });
 
-    this.indices = crateModel.indices;
-    this.vertexData = new Float32Array(Model.fromObj(crateModel));
+    const model = Model.fromCollada(crateModel);
+    this.indices = model.indices;
+    this.vertexData = model.vertices;
 
     this.elementBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
